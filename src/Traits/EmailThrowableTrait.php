@@ -30,9 +30,7 @@ trait EmailThrowableTrait
         }
         // If we made it here its time to to email the error
         $email = $this->_getMailer();
-        // Setup the email
         $email = $this->_setupEmail($email, $throwable);
-        // Send the email
         $email->send();
 
         return true;
@@ -79,7 +77,6 @@ trait EmailThrowableTrait
             // If its an exception use the default email
             case $throwable instanceof Exception:
                 // Break omitted intentionally
-            // Default catches all dev thrown exceptions
             default:
                 $email->template('ErrorEmail.exception', 'ErrorEmail.default')
                     ->subject($this->_setupSubjectWithSiteAndEnv('An exception has been thrown'))
@@ -91,13 +88,11 @@ trait EmailThrowableTrait
                 break;
         }
         $email->emailFormat('both');
-        // If we have a toEmailAddress other than the default
-        // provided by the email delivery profile set it
+        // Use toEmailAddress if we have it
         if (Configure::read('ErrorEmail.toEmailAddress')) {
             $email->to(Configure::read('ErrorEmail.toEmailAddress'));
         }
-        // If we have a toEmailAddress other than the default
-        // provided by the email delivery profile set it
+        // Use fromEmailAddress if we have it
         if (Configure::read('ErrorEmail.fromEmailAddress')) {
             $email->from(Configure::read('ErrorEmail.fromEmailAddress'));
         }
@@ -152,7 +147,7 @@ trait EmailThrowableTrait
         if ($this->_throttle($throwable)) {
             return true;
         }
-        // If we made it here we shouldn't skip emailing so return false
+        // If we made it here we shouldn't skip emailing
         return false;
     }
 
@@ -182,29 +177,24 @@ trait EmailThrowableTrait
     {
         // Check the config first to see if we should even try to throttle
         if (empty(Configure::read('ErrorEmail.throttle'))) {
-            // Don't throttle
             return false;
         }
         // Check the throttle skip list to see if we should skip throttling
         if ($this->_inSkipList('ErrorEmail.skipThrottle', $throwable)) {
-            // Don't throttle
             return false;
         }
         // If the throwable should skip throttling for any other reason
         if ($this->_appSpecificSkipThrottle($throwable)) {
-            // Don't throttle
             return false;
         }
         // This throwable shouldn't skip throttling if we made it this far so check the cache to see if we need to throttle
         // The cache key is a composite of the throwable class, message, and code
         $cacheKey = preg_replace("/[^A-Za-z0-9]/", '', get_class($throwable) . $throwable->getMessage() . $throwable->getCode());
         if (Cache::read($cacheKey, Configure::read('ErrorEmail.throttleCache')) !== false) {
-            // If we found the cache key throttle
             return true;
         }
         // The throwable wasn't in the cache so don't throttle it this time but add it to the cache for next time
         Cache::add($cacheKey, true, Configure::read('ErrorEmail.throttleCache'));
-        // Don't throttle
         return false;
     }
 
