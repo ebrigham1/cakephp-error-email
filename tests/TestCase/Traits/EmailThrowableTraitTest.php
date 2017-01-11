@@ -73,7 +73,8 @@ class EmailThrowableTraitTest extends TestCase
      *
      * @return void
      */
-    public function testEmailThrowableConfigInSkipLogList() {
+    public function testEmailThrowableConfigInSkipLogList()
+    {
         // Setup the config
         Configure::write('ErrorEmail.email', true);
         Configure::write('Error.skipLog', [Exception::class]);
@@ -89,7 +90,8 @@ class EmailThrowableTraitTest extends TestCase
      *
      * @return void
      */
-    public function testEmailThrowableConfigInSkipEmailList() {
+    public function testEmailThrowableConfigInSkipEmailList()
+    {
         // Setup the config
         Configure::write('ErrorEmail.email', true);
         Configure::write('ErrorEmail.skipEmail', [Exception::class]);
