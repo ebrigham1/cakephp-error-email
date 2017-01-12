@@ -1,5 +1,4 @@
 # ErrorEmail plugin for CakePHP 3.x
-
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)
 [![Build Status](https://api.travis-ci.org/ebrigham1/cakephp-error-email.png?branch=master)](https://travis-ci.org/ebrigham1/cakephp-error-email)
 [![Coverage Status](https://img.shields.io/codecov/c/github/ebrigham1/cakephp-error-email/master.svg)](https://codecov.io/github/ebrigham1/cakephp-error-email?branch=master)
@@ -18,14 +17,15 @@ The ErrorEmail plugin is designed to enhance CakePHP's error handling system by 
 * [Basic Usage](#basic-usage)
 * [Advanced Usage](#advanced-usage)
 	* [Overriding Views](#overriding-views)
-	* [Extending/Overriding Core Functions](#extending-overriding)
+	* [Extending/Overriding Core Functions](#extendingoverriding-core-functions)
 		* [Advanced Installation](#advanced-installation)
-		* [Adding Arbitrary Logic to Skip Emails](#skip-emails)
-		* [Adding Arbitrary Logic to Throttle Emails](#skip-throttle)
-		* [Overriding Emailing Functionality](#override-email)
+		* [Adding Arbitrary Logic to Skip Emails](#adding-arbitrary-logic-to-skip-emails)
+		* [Adding Arbitrary Logic to Throttle Emails](#adding-arbitrary-logic-to-throttle-emails)
+		* [Overriding Emailing Functionality](#overriding-emailing-functionality)
+* [Bugs and Feedback](#bugs-and-feedback)
+* [License](#license)
 
 ## Installation
-
 You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
 
 Run the following command
@@ -61,7 +61,6 @@ use ErrorEmail\Middleware\ErrorHandlerMiddleware;
 ```
 
 ## Configuration
-
 Default configuration:
 ```php
 'ErrorEmail' => [
@@ -126,7 +125,6 @@ If you found that you were receiving a lot of emails for exceptions/errors that 
 If you want to throttle emails in general to avoid spamming your team, but you have some exceptions that you must always receive an email about then you can use the skipThrottle list. For instance maybe a customer has paid for something on your site, but you were unable to fulfill their purchase after they paid because it requires an API call to a service that was temporarilly down. Then you can add the exception you throw in that instance to the skip throttle list. This will result in all exceptions asside from the exceptions you define in the skipThrottle list being throttled to only email once per every 5 minutes while your FullfillmentException will email you every single time it happens.
 
 ## Advanced Usage
-
 ### Overriding Views
 The default plugin email templates can be overridden by creating your own template files at:
 * **src/Template/Plugin/ErrorEmail/Email/html/error.ctp**
@@ -135,7 +133,7 @@ The default plugin email templates can be overridden by creating your own templa
 * **src/Template/Plugin/ErrorEmail/Email/text/exception.ctp**
 
 ### Extending/Overriding Core Functions
-In order to extend/override core functionality of this plugin you will have to create your own classes which extend this plugins classes.
+In order to extend/override core functionality of this plugin you will have to create your own classes which extend this plugin's classes.
 
 #### Advanced Installation
 Create **src/Traits/EmailThrowableTrait.php**:
@@ -191,6 +189,7 @@ With:
 ```php
 use App\Middleware\ErrorHandlerMiddleware;
 ```
+
 #### Adding Arbitrary Logic to Skip Emails
 In your **src/Traits/EmailThrowableTrait.php** add this function:
 ```php
@@ -200,6 +199,7 @@ protected function _appSpecificSkipEmail($throwable)
     // than instanceof class provided by plugin config, return true to skip emailing, false to not skip emailing
 }
 ```
+
 #### Adding Arbitrary Logic to Throttle Emails
 In your **src/Traits/EmailThrowableTrait.php** add this function:
 ```php
@@ -209,6 +209,7 @@ protected function _appSpecificSkipThrottle($throwable)
     // than instanceof class provided by plugin config, return true to skip throttling, false to not skip throttling
 }
 ```
+
 #### Overriding Emailing Functionality
 In your **src/Traits/EmailThrowableTrait.php** add this function:
 ```php
@@ -221,3 +222,9 @@ protected function _setupEmail(Cake\Mailer\Email $email, $throwable)
    return $email;
 }
 ```
+
+## Bugs and Feedback
+http://github.com/ebrigham1/cakephp-error-email/issues
+
+## License
+Copyright (c) 2017, Ethan Brigham and licensed under [The MIT License](http://www.opensource.org/licenses/mit-license.php).
