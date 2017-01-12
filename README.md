@@ -1,7 +1,7 @@
 # ErrorEmail plugin for CakePHP 3.x
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)
 [![Build Status](https://api.travis-ci.org/ebrigham1/cakephp-error-email.png?branch=master)](https://travis-ci.org/ebrigham1/cakephp-error-email)
 [![Coverage Status](https://img.shields.io/codecov/c/github/ebrigham1/cakephp-error-email/master.svg)](https://codecov.io/github/ebrigham1/cakephp-error-email?branch=master)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)
 
 The ErrorEmail plugin is designed to enhance CakePHP's error handling system by adding the ability to conditionally email the dev team when errors or exceptions are thrown by your application with useful debugging information such as:
 * Exception/Error Url
