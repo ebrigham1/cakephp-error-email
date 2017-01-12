@@ -12,6 +12,18 @@ The ErrorEmail plugin is designed to enhance CakePHP's error handling system by 
 * File and Line Number
 * Stack Trace
 
+## Table of Contents
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Basic Usage](#basic-usage)
+* [Advanced Usage](#advanced-usage)
+	* [Overriding Views](#overriding-views)
+	* [Extending/Overriding Core Functions](#extending-overriding)
+		* [Advanced Installation](#advanced-installation)
+		* [Adding Arbitrary Logic to Skip Emails](#skip-emails)
+		* [Adding Arbitrary Logic to Throttle Emails](#skip-throttle)
+		* [Overriding Emailing Functionality](#override-email)
+
 ## Installation
 
 You can install this plugin into your CakePHP application using [composer](http://getcomposer.org).
@@ -115,11 +127,97 @@ If you want to throttle emails in general to avoid spamming your team, but you h
 
 ## Advanced Usage
 
-### Views
+### Overriding Views
 The default plugin email templates can be overridden by creating your own template files at:
 * **src/Template/Plugin/ErrorEmail/Email/html/error.ctp**
 * **src/Template/Plugin/ErrorEmail/Email/text/error.ctp**
 * **src/Template/Plugin/ErrorEmail/Email/html/exception.ctp**
 * **src/Template/Plugin/ErrorEmail/Email/text/exception.ctp**
 
+### Extending/Overriding Core Functions
+In order to extend/override core functionality of this plugin you will have to create your own classes which extend this plugins classes.
 
+#### Advanced Installation
+Create **src/Traits/EmailThrowableTrait.php**:
+```php
+<?php
+namespace App\Traits;
+
+trait EmailThrowableTrait
+{
+}
+```
+Create **src/Error/ErrorHandler.php**:
+```php
+<?php
+namespace App\Error;
+
+use App\Traits\EmailThrowableTrait;
+use ErrorEmail\Error\ErrorHandler as ErrorEmailErrorHandler;
+
+class ErrorHandler extends ErrorEmailErrorHandler
+{
+    use EmailThrowableTrait;
+}
+```
+Create **src/Middleware/ErrorHandlerMiddleware.php**
+```php
+<?php
+namespace App\Middleware;
+
+use App\Traits\EmailThrowableTrait;
+use ErrorEmail\Middleware\ErrorHandlerMiddleware as ErrorEmailErrorHandlerMiddleware;
+
+class ErrorHandlerMiddleware extends ErrorEmailErrorHandlerMiddleware
+{
+    use EmailThrowableTrait;
+}
+```
+Now that you have your own classes you will need to update your application to use them.
+
+In your **config/Bootstrap.php** replace:
+```php
+use Cake\Error\ErrorHandler; // Or use ErrorEmail\Error\ErrorHandler;
+```
+With:
+```php
+use App\Error\ErrorHandler;
+```
+In your **src/Application.php** replace:
+```php
+use Cake\Error\Middleware\ErrorHandlerMiddleware; // Or use ErrorEmail\Middleware\ErrorHandlerMiddleware;
+```
+With:
+```php
+use App\Middleware\ErrorHandlerMiddleware;
+```
+#### Adding Arbitrary Logic to Skip Emails
+In your **src/Traits/EmailThrowableTrait.php** add this function:
+```php
+protected function _appSpecificSkipEmail($throwable)
+{
+    // Add any logic here to skip emailing throwables that requires more complicated checking
+    // than instanceof class provided by plugin config, return true to skip emailing, false to not skip emailing
+}
+```
+#### Adding Arbitrary Logic to Throttle Emails
+In your **src/Traits/EmailThrowableTrait.php** add this function:
+```php
+protected function _appSpecificSkipThrottle($throwable)
+{
+    // Add any logic here to skip throttling throwables that requires more complicated checking
+    // than instanceof class provided by plugin config, return true to skip throttling, false to not skip throttling
+}
+```
+#### Overriding Emailing Functionality
+In your **src/Traits/EmailThrowableTrait.php** add this function:
+```php
+protected function _setupEmail(Cake\Mailer\Email $email, $throwable)
+{
+   // Add logic here to pick the email template, layout,
+   // set, the to address, from address, viewVars, ect.
+   // Make sure to return your email object at the end of the function
+   // so the plugin can send the email.
+   return $email;
+}
+```
