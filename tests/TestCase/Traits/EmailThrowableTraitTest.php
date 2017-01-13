@@ -6,10 +6,9 @@ use Cake\Core\Configure;
 use Cake\Error\FatalErrorException;
 use Cake\Mailer\Email;
 use Cake\TestSuite\TestCase;
+use ErrorEmail\Exception\ConfigurationException;
 use ErrorEmail\Traits\EmailThrowableTrait;
 use Exception;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * EmailThrowableTrait Test
@@ -320,5 +319,22 @@ class EmailThrowableTraitTest extends TestCase
         $return = $this->emailThrowableTraitMock->emailThrowable($exception);
         // Should return true
         $this->assertTrue($return);
+    }
+
+    /**
+     * Tests the emailError method when we are misconfigured
+     *
+     * @return void
+     */
+    public function testEmailThrowableMisconfigured()
+    {
+        // Setup the config
+        Configure::write('ErrorEmail.email', true);
+        Configure::write('ErrorEmail.throttle', false);
+        // Setup objects used in test
+        $exception = new ConfigurationException('Misconfigured');
+        $return = $this->emailThrowableTraitMock->emailThrowable($exception);
+        // Should return false
+        $this->assertFalse($return);
     }
 }

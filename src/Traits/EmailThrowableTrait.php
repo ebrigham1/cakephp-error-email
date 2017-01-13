@@ -6,6 +6,7 @@ use Cake\Core\Configure;
 use Cake\Error\FatalErrorException;
 use Cake\Mailer\Email;
 use Error;
+use ErrorEmail\Exception\ConfigurationException;
 use Exception;
 
 /**
@@ -131,24 +132,26 @@ trait EmailThrowableTrait
      */
     protected function _skipEmail($throwable)
     {
-        // If config says don't email
-        if (empty(Configure::read('ErrorEmail.email'))) {
-            return true;
+        switch (true) {
+            // If config says don't email
+            case empty(Configure::read('ErrorEmail.email')):
+                // Break omitted intentionally
+            // If we are misconfigured
+            case $throwable instanceof ConfigurationException:
+                // Break omitted intentionally
+            // If the throwable is in any of the skip lists we check
+            case $this->_inSkipEmailLists($throwable):
+                // Break omitted intentionally
+            // If the throwable should be skipped for any other reason
+            case $this->_appSpecificSkipEmail($throwable):
+                // Break omitted intentionally
+            // Check if we should rate limit the throwable to prevent spam
+            case $this->_throttle($throwable):
+                return true;
+            default:
+                // If we made it here we shouldn't skip emailing
+                return false;
         }
-        // If the throwable is in any of the skip lists we check
-        if ($this->_inSkipEmailLists($throwable)) {
-            return true;
-        }
-        // If the throwable should be skipped for any other reason
-        if ($this->_appSpecificSkipEmail($throwable)) {
-            return true;
-        }
-        // Check if we should rate limit the throwable to prevent spam
-        if ($this->_throttle($throwable)) {
-            return true;
-        }
-        // If we made it here we shouldn't skip emailing
-        return false;
     }
 
     /**
@@ -175,28 +178,28 @@ trait EmailThrowableTrait
      */
     protected function _throttle($throwable)
     {
-        // Check the config first to see if we should even try to throttle
-        if (empty(Configure::read('ErrorEmail.throttle'))) {
-            return false;
+        switch (true) {
+            // Check the config first to see if we should even try to throttle
+            case empty(Configure::read('ErrorEmail.throttle')):
+                // Break omitted intentionally
+            // Check the throttle skip list to see if we should skip throttling
+            case $this->_inSkipList('ErrorEmail.skipThrottle', $throwable):
+                // Break omitted intentionally
+            // If the throwable should skip throttling for any other reason
+            case $this->_appSpecificSkipThrottle($throwable):
+                return false;
+            default:
+                // This throwable shouldn't skip throttling if we made it this far so check the cache to see if we need to throttle.
+                // The cache key is a composite of the throwable class, message, and code
+                $cacheKey = preg_replace("/[^A-Za-z0-9]/", '', get_class($throwable) . $throwable->getMessage() . $throwable->getCode());
+                if (Cache::read($cacheKey, Configure::read('ErrorEmail.throttleCache')) !== false) {
+                    return true;
+                }
+                // The throwable wasn't in the cache add it to the cache now
+                Cache::add($cacheKey, true, Configure::read('ErrorEmail.throttleCache'));
+                // Since it wasn't in the cache don't throttle it
+                return false;
         }
-        // Check the throttle skip list to see if we should skip throttling
-        if ($this->_inSkipList('ErrorEmail.skipThrottle', $throwable)) {
-            return false;
-        }
-        // If the throwable should skip throttling for any other reason
-        if ($this->_appSpecificSkipThrottle($throwable)) {
-            return false;
-        }
-        // This throwable shouldn't skip throttling if we made it this far so check the cache to see if we need to throttle
-        // The cache key is a composite of the throwable class, message, and code
-        $cacheKey = preg_replace("/[^A-Za-z0-9]/", '', get_class($throwable) . $throwable->getMessage() . $throwable->getCode());
-        if (Cache::read($cacheKey, Configure::read('ErrorEmail.throttleCache')) !== false) {
-            return true;
-        }
-        // The throwable wasn't in the cache so don't throttle it this time but add it to the cache for next time
-        Cache::add($cacheKey, true, Configure::read('ErrorEmail.throttleCache'));
-
-        return false;
     }
 
     /**
