@@ -195,6 +195,7 @@ trait EmailThrowableTrait
         }
         // The throwable wasn't in the cache so don't throttle it this time but add it to the cache for next time
         Cache::add($cacheKey, true, Configure::read('ErrorEmail.throttleCache'));
+
         return false;
     }
 
