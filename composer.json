@@ -1,9 +1,9 @@
 {
-    "name": "ebrigham1/ErrorEmail",
+    "name": "ebrigham1/cakephp-error-email",
     "description": "CakePHP3.x ErrorEmail Plugin",
     "type": "cakephp-plugin",
     "keywords": ["cakephp", "error", "exception", "email", "plugin"],
-    "homepage": "https://github.com/ebrigham1/CakePHP-ErrorEmail/",
+    "homepage": "https://github.com/ebrigham1/cakephp-error-email/",
     "license": "MIT",
     "authors": [
         {
@@ -12,8 +12,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/ebrigham1/CakePHP-ErrorEmail/issues",
-        "source": "https://github.com/ebrigham1/CakePHP-ErrorEmail/"
+        "issues": "https://github.com/ebrigham1/cakephp-error-email/issues",
+        "source": "https://github.com/ebrigham1/cakephp-error-email/"
     },
     "require": {
         "php": ">=5.5.9",
