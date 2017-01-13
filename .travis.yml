@@ -21,7 +21,7 @@ before_script:
   - composer install --prefer-source --no-interaction
 
 script:
-  - if [[ $PHPCS != '1' && $COVERAGE != '1' ]]; then vendor/vin/phpunit; fi
+  - if [[ $PHPCS != '1' && $COVERAGE != '1' ]]; then vendor/bin/phpunit; fi
   - if [[ $PHPCS = 1 ]]; then vendor/bin/phpcs -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP --ignore=vendor .; fi
   - if [[ $COVERAGE = 1 ]]; then vendor/bin/phpunit --coverage-clover=clover.xml; fi
   
