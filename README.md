@@ -20,7 +20,7 @@ The ErrorEmail plugin is designed to enhance CakePHP's error handling system by 
 	* [Extending/Overriding Core Functions](#extendingoverriding-core-functions)
 		* [Advanced Installation](#advanced-installation)
 		* [Adding Arbitrary Logic to Skip Emails](#adding-arbitrary-logic-to-skip-emails)
-		* [Adding Arbitrary Logic to Throttle Emails](#adding-arbitrary-logic-to-throttle-emails)
+		* [Adding Arbitrary Logic to Skip Throttling](#adding-arbitrary-logic-to-skip-throttling)
 		* [Overriding Emailing Functionality](#overriding-emailing-functionality)
 * [Bugs and Feedback](#bugs-and-feedback)
 * [License](#license)
@@ -91,9 +91,9 @@ This configuration is automatically merged with your application specific config
 * skipEmail (array) - An array of exception/error classes that should never be emailed even if they are thrown Ex: [Cake\Network\Exception\NotFoundException::class, Cake\Network\Exception\InvalidCsrfTokenException::class]
 * throttle (bool) - Enable or disable throttling of error/exception emails. Throttling is only performed if its been determined the exact same exception/error has already been emailed by checking the cache. Errors/Exceptions are determined to be unique by exception/error class + exception/error message + exception/error code
 * throttleCache (string) - The cache configuration to use for throttling emails, the default is using the file cache driver with a 5 minute duration
-* skipThrottle (array) - An array of exception/error classes that should never be throttled even if they are thrown more than once within the normal throttling window Ex: ['App\Exception\FullfillmentException']
-* toEmailAddress (string) - The email address to send these error/exception emails to, typically the dev team
-* fromEmailAddress (string) - The email address these emails should be sent from ex: noreply@yoursite.com
+* skipThrottle (array) - An array of exception/error classes that should never be throttled even if they are thrown more than once within the normal throttling window Ex: ['App\Exception\FullfillmentException'] These should be exceptions/errors you always want an email about every single time even if it spams your inbox.
+* toEmailAddress (string) - The email address to send these error/exception emails to, typically the dev team. This will override the to address provided by the email delivery profile if both are present.
+* fromEmailAddress (string) - The email address these emails should be sent from ex: noreply@yoursite.com. This will override the from address provided by the email delivery profile if both are present.
 * environment (string) - Optional, with the default template this will be placed in both the subject and the body of the email so its easy to identify what environment the email was sent from Ex: local/staging/production. 
 * siteName (string) - Optional, with the default template this will be placed in both the subject and the body of the email so its easy to identify what site the email was sent from.
 
@@ -114,8 +114,8 @@ Typically you define these keys in your **config/app.php** file:
     'skipThrottle' => [],
     'toEmailAddress' => 'devteam@yoursite.com',
     'fromEmailAddress' => 'noreply@yoursite.com',
-    'environment' => production,
-    'siteName' => yoursite.com
+    'environment' => 'production',
+    'siteName' => 'yoursite.com'
 ]
 ```
 With this configuration you would get emails whenever any error or exception happened on your site with detailed debugging information in the email. If say you had an error on a popular page that many users were hitting that error would only be sent to you once every 5 minutes for the duration of the error being in existence. If a different error was thrown as well you would get that error right away the first time but then again it would be throttled to a maximum of once every 5 minutes.
@@ -200,7 +200,7 @@ protected function _appSpecificSkipEmail($throwable)
 }
 ```
 
-#### Adding Arbitrary Logic to Throttle Emails
+#### Adding Arbitrary Logic to Skip Throttling
 In your **src/Traits/EmailThrowableTrait.php** add this function:
 ```php
 protected function _appSpecificSkipThrottle($throwable)
