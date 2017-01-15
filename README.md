@@ -116,7 +116,7 @@ Typically you define these keys in your **config/app.php** file:
     'fromEmailAddress' => 'noreply@yoursite.com',
     'environment' => 'production',
     'siteName' => 'yoursite.com'
-]
+],
 ```
 With this configuration you would get emails whenever any error or exception happened on your site with detailed debugging information in the email. If say you had an error on a popular page that many users were hitting that error would only be sent to you once every 5 minutes for the duration of the error being in existence. If a different error was thrown as well you would get that error right away the first time but then again it would be throttled to a maximum of once every 5 minutes.
 
@@ -213,10 +213,10 @@ protected function _appSpecificSkipThrottle($throwable)
 #### Overriding Emailing Functionality
 In your **src/Traits/EmailThrowableTrait.php** add this function:
 ```php
-protected function _setupEmail(Cake\Mailer\Email $email, $throwable)
+protected function _setupEmail(\Cake\Mailer\Email $email, $throwable)
 {
    // Add logic here to pick the email template, layout,
-   // set, the to address, from address, viewVars, ect.
+   // set the to address, from address, viewVars, ect.
    // Make sure to return your email object at the end of the function
    // so the plugin can send the email.
    return $email;
