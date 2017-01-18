@@ -1,4 +1,4 @@
-There has been an exception thrown<?php if ($site): ?> on <?= $site ?><?php endif; ?> 
+An exception has been thrown<?php if ($site): ?> on <?= $site ?><?php endif; ?><?php if ($environment): ?> (<?= $environment ?>)<?php endif; ?>
 
 <?php if ($environment): ?><strong>Environment:</strong> <?= $environment ?><?php endif; ?>
 Exception Url: <?= $this->Url->build($this->request->here, true) ?>
