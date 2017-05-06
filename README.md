@@ -11,6 +11,8 @@ The ErrorEmail plugin is designed to enhance CakePHP's error handling system by 
 * File and Line Number
 * Stack Trace
 
+![Screenshot](https://cloud.githubusercontent.com/assets/7337543/25772323/522e7a90-3236-11e7-9511-4beb73dfa2ed.jpg)
+
 ## Table of Contents
 * [Installation](#installation)
 * [Configuration](#configuration)
