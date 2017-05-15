@@ -22,6 +22,10 @@
         <td><strong>Exception Code:</strong></td>
         <td><?= $exception->getCode() ?></td>
     </tr>
+    <tr>
+        <td><strong>Client IP:</strong></td>
+        <td><?= $this->request->clientIp() ?></td>
+    </tr>
 </table>
 <hr style="color: #f6f6f6;">
 <table align="center" style="text-align: center;" border="0" cellspacing="0" cellpadding="0">

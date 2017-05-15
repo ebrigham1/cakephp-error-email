@@ -10,6 +10,10 @@ use ErrorEmail\Exception\ConfigurationException;
 $engine = new PhpConfig();
 // Read our config file
 $configValues = $engine->read('ErrorEmail.config');
+// Special handling for emailLevels key since hash::merge doesn't handle it correctly
+if (Configure::read('ErrorEmail.emailLevels')) {
+    unset($configValues['ErrorEmail']['emailLevels']);
+}
 // Merge our default ErrorEmail config with the apps config ErrorEmail config prefering the apps version
 Configure::write(
     'ErrorEmail',

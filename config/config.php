@@ -5,6 +5,16 @@ return [
      *
      * - email (bool) - Enable or disable emailing of errors/exceptions
      *
+     * - emailLevels (array) - The email levels that should be emailed. Valid levels are
+     *   ['exception', 'error', 'warning', 'notice', 'strict', 'deprecated']. Each level is used to
+     *   capture the following exceptions/php errors:
+     *     'exception' - \Exception
+     *     'error' - \Error, E_PARSE, E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR
+     *     'warning' - E_WARNING, E_USER_WARNING, E_COMPILE_WARNING, E_RECOVERABLE_ERROR
+     *     'notice' - E_NOTICE, E_USER_NOTICE
+     *     'strict' - E_STRICT
+     *     'deprecated' - E_DEPRECATED, E_USER_DEPRECATED,
+     *
      * - emailDeliveryProfile (string) - The email delivery profile to use "default"
      *   is the default
      *
@@ -35,6 +45,7 @@ return [
      */
     'ErrorEmail' => [
         'email' => false,
+        'emailLevels' => ['exception', 'error'],
         'emailDeliveryProfile' => 'default',
         'skipEmail' => [],
         'throttle' => false,

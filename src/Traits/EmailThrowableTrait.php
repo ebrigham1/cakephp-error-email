@@ -7,6 +7,10 @@ use Cake\Error\FatalErrorException;
 use Cake\Mailer\Email;
 use Error;
 use ErrorEmail\Exception\ConfigurationException;
+use ErrorEmail\Exception\DeprecatedException;
+use ErrorEmail\Exception\NoticeException;
+use ErrorEmail\Exception\StrictException;
+use ErrorEmail\Exception\WarningException;
 use Exception;
 
 /**
@@ -64,11 +68,11 @@ trait EmailThrowableTrait
         // Switch template and variables assigned per throwable class to customize feedback
         // Can also potentially change to and from adresses to send it to different teams to handle
         switch (true) {
-            // Send a different template for fatal errors
-            // Error catches php7 fatal errors FatalErrorException catches php5 fatal errors
-            case $throwable instanceof Error || $throwable instanceof FatalErrorException:
+            // Send a different template for php errors
+            case $this->_isError($throwable):
+                // Use the error email template
                 $email->template('ErrorEmail.error', 'ErrorEmail.default')
-                    ->subject($this->_setupSubjectWithSiteAndEnv('A fatal error has been thrown'))
+                    ->subject($this->_setupSubjectWithSiteAndEnv('An error has been thrown'))
                     ->viewVars([
                         'error' => $throwable,
                         'environment' => Configure::read('ErrorEmail.environment'),
@@ -79,6 +83,7 @@ trait EmailThrowableTrait
             case $throwable instanceof Exception:
                 // Break omitted intentionally
             default:
+                // Use the exception email template
                 $email->template('ErrorEmail.exception', 'ErrorEmail.default')
                     ->subject($this->_setupSubjectWithSiteAndEnv('An exception has been thrown'))
                     ->viewVars([
@@ -135,6 +140,9 @@ trait EmailThrowableTrait
         switch (true) {
             // If config says don't email
             case empty(Configure::read('ErrorEmail.email')):
+                // Break omitted intentionally
+            // If the throwable isn't included in the emailLevels config
+            case !$this->_inEmailLevels($throwable):
                 // Break omitted intentionally
             // If we are misconfigured
             case $throwable instanceof ConfigurationException:
@@ -240,7 +248,7 @@ trait EmailThrowableTrait
      * Check if the given throwable is in the skip list given by $listName
      *
      * @param string $listName Name of the skip list to check.
-     * @param \Throwable (php5 \Exception) $throwable Throwable inastance.
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance.
      * @return bool
      */
     protected function _inSkipList($listName, $throwable)
@@ -257,5 +265,267 @@ trait EmailThrowableTrait
         }
         // If we made it all the way here they aren't in the skip list
         return false;
+    }
+
+    /**
+     * Checks if the given throwable represents a php error rather than an exception
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isError($throwable)
+    {
+        switch (true) {
+            // Php fatal errors
+            case $this->_isEmailLevelError($throwable):
+                // Break omitted intentionally
+            // Php warnings
+            case $this->_isEmailLevelWarning($throwable):
+                // Break omitted intentionally
+            // Php notices
+            case $this->_isEmailLevelNotice($throwable):
+                // Break omitted intentionally
+            // Php strict notices
+            case $this->_isEmailLevelStrict($throwable):
+                // Break omitted intentionally
+            // Php deprecated notices
+            case $this->_isEmailLevelDeprecated($throwable):
+                // We have an error, return true
+                return true;
+            default:
+                // We don't have an error, return false
+                return false;
+        }
+    }
+
+    /**
+     * Check if the given throwable is in the emailLevels config
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevels($throwable)
+    {
+        // Check to make sure we don't have an empty list
+        if (!empty(Configure::read('ErrorEmail.emailLevels'))) {
+            switch (true) {
+                case $this->_inEmailLevelException($throwable):
+                    // Break omitted intentionally
+                case $this->_inEmailLevelError($throwable):
+                    // Break omitted intentionally
+                case $this->_inEmailLevelWarning($throwable):
+                    // Break omitted intentionally
+                case $this->_inEmailLevelNotice($throwable):
+                    // Break omitted intentionally
+                case $this->_inEmailLevelStrict($throwable):
+                    // Break omitted intentionally
+                case $this->_inEmailLevelDeprecated($throwable):
+                    return true;
+                default:
+                    // If we made it here then the throwable isn't in the email levels
+                    return false;
+            }
+        }
+        // If we made it all the way here the error isn't in the emailLevels config
+        return false;
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'exception' key and the key exists
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevelException($throwable)
+    {
+        // If we have a 'exception' type throwable and the 'exception' value exists on the emailLevels key
+        // in the configuration file return true otherwise return false
+        if ($this->_isEmailLevelException($throwable) && in_array('exception', (array)Configure::read('ErrorEmail.emailLevels'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'error' key and the key exists
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevelError($throwable)
+    {
+        // If we have a 'error' type throwable and the 'error' value exists on the emailLevels key
+        // in the configuration file return true otherwise return false
+        if ($this->_isEmailLevelError($throwable) && in_array('error', (array)Configure::read('ErrorEmail.emailLevels'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'warning' key and the key exists
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevelWarning($throwable)
+    {
+        // If we have a 'warning' type throwable and the 'warning' value exists on the emailLevels key
+        // in the configuration file return true otherwise return false
+        if ($this->_isEmailLevelWarning($throwable) && in_array('warning', (array)Configure::read('ErrorEmail.emailLevels'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'notice' key and the key exists
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevelNotice($throwable)
+    {
+        // If we have a 'notice' type throwable and the 'notice' value exists on the emailLevels key
+        // in the configuration file return true otherwise return false
+        if ($this->_isEmailLevelNotice($throwable) && in_array('notice', (array)Configure::read('ErrorEmail.emailLevels'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'strict' key and the key exists
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevelStrict($throwable)
+    {
+        // If we have a 'strict' type throwable and the 'strict' value exists on the emailLevels key
+        // in the configuration file return true otherwise return false
+        if ($this->_isEmailLevelStrict($throwable) && in_array('strict', (array)Configure::read('ErrorEmail.emailLevels'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'deprecated' key and the key exists
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _inEmailLevelDeprecated($throwable)
+    {
+        // If we have a 'deprecated' type throwable and the 'deprecated' value exists on the emailLevels key
+        // in the configuration file return true otherwise return false
+        if ($this->_isEmailLevelDeprecated($throwable) && in_array('deprecated', (array)Configure::read('ErrorEmail.emailLevels'))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'exception' key (all exceptions except those
+     * that represent php fatal errors, php warnings, php notices, php strict notices, and php deprecated notices)
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isEmailLevelException($throwable)
+    {
+        // Any exception that doesn't represent a php error falls under the 'exception' key
+        if (!$this->_isError($throwable) && $throwable instanceof Exception) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'error' key (all php fatal errors)
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isEmailLevelError($throwable)
+    {
+        // Error catches php7 fatal errors FatalErrorException catches php5 fatal errors
+        if ($throwable instanceof Error || $throwable instanceof FatalErrorException) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'warning' key (all php warnings)
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isEmailLevelWarning($throwable)
+    {
+        // WarningException catches all php warnings
+        if ($throwable instanceof WarningException) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'notice' key (all php notices)
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isEmailLevelNotice($throwable)
+    {
+        // NoticeException catches all php notices
+        if ($throwable instanceof NoticeException) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'strict' key (all php strict notices)
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isEmailLevelStrict($throwable)
+    {
+        // StrictException catches all php strict notices
+        if ($throwable instanceof StrictException) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the throwable belongs to the emailLevels 'deprecated' key (all php deprecated notices)
+     *
+     * @param \Throwable (php5 \Exception) $throwable Throwable instance
+     * @return bool
+     */
+    protected function _isEmailLevelDeprecated($throwable)
+    {
+        // DeprecatedException catches all php deprecated notices
+        if ($throwable instanceof DeprecatedException) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

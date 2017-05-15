@@ -8,10 +8,11 @@ The ErrorEmail plugin is designed to enhance CakePHP's error handling system by 
 * Exception/Error Class
 * Exception/Error Message
 * Exception/Error Code
+* Client IP
 * File and Line Number
 * Stack Trace
 
-![Screenshot](https://cloud.githubusercontent.com/assets/7337543/25772323/522e7a90-3236-11e7-9511-4beb73dfa2ed.jpg)
+![Screenshot](https://cloud.githubusercontent.com/assets/7337543/26083097/b3c0aebe-39a1-11e7-8721-ab3301a281cf.png)
 
 ## Table of Contents
 * [Installation](#installation)
@@ -67,6 +68,7 @@ Default configuration:
 ```php
 'ErrorEmail' => [
     'email' => false,
+    'emailLevels' => ['exception', 'error'],
     'emailDeliveryProfile' => 'default',
     'skipEmail' => [],
     'throttle' => false,
@@ -89,6 +91,13 @@ Default configuration:
 This configuration is automatically merged with your application specific configuartion preferentially using any keys you define.
 
 * email (bool) - Enable or disable emailing of errors/exceptions
+* emailLevels (array) - The email levels that should be used to determine what errors/exceptions are emailed. Valid levels are ['exception', 'error', 'warning', 'notice', 'strict', 'deprecated']. Each level is used to capture the following exceptions/php errors:
+    * 'exception' - \Exception (all user/framework thrown exceptions)
+    * 'error' - \Error, E_PARSE, E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR
+    * 'warning' - E_WARNING, E_USER_WARNING, E_COMPILE_WARNING, E_RECOVERABLE_ERROR
+    * 'notice' - E_NOTICE, E_USER_NOTICE
+    * 'strict' - E_STRICT
+    * 'deprecated' - E_DEPRECATED, E_USER_DEPRECATED,
 * emailDeliveryProfile (string) - The email delivery profile (defined in config/app.php under the Email key) to use "default" is the default
 * skipEmail (array) - An array of exception/error classes that should never be emailed even if they are thrown Ex: [Cake\Network\Exception\NotFoundException::class, Cake\Network\Exception\InvalidCsrfTokenException::class]
 * throttle (bool) - Enable or disable throttling of error/exception emails. Throttling is only performed if its been determined the exact same exception/error has already been emailed by checking the cache. Errors/Exceptions are determined to be unique by exception/error class + exception/error message + exception/error code
@@ -120,7 +129,7 @@ Typically you define these keys in your **config/app.php** file:
     'siteName' => 'yoursite.com'
 ],
 ```
-With this configuration you would get emails whenever any error or exception happened on your site with detailed debugging information in the email. If say you had an error on a popular page that many users were hitting that error would only be sent to you once every 5 minutes for the duration of the error being in existence. If a different error was thrown as well you would get that error right away the first time but then again it would be throttled to a maximum of once every 5 minutes.
+With this configuration you would get emails whenever any fatal error or exception happened on your site with detailed debugging information in the email. If say you had an error on a popular page that many users were hitting that error would only be sent to you once every 5 minutes for the duration of the error being in existence. If a different error was thrown as well you would get that error right away the first time but then again it would be throttled to a maximum of once every 5 minutes.
 
 If you found that you were receiving a lot of emails for exceptions/errors that you can not do anything about for instance Cake\Network\Exception\NotFoundException you can simply add it to the skipEmail config and you will no longer be bothered with those exceptions.
 
