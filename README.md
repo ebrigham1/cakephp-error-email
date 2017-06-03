@@ -33,7 +33,7 @@ You can install this plugin into your CakePHP application using [composer](http:
 
 Run the following command
 ```sh
-composer require ebrigham1/cakephp-error-email "^1.0.0"
+composer require ebrigham1/cakephp-error-email
  ```
 You can then load the plugin using the shell command:
 ```sh
