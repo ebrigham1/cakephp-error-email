@@ -88,7 +88,7 @@ Default configuration:
     ],
 ],
 ```
-This configuration is automatically merged with your application specific configuartion preferentially using any keys you define.
+This configuration is automatically merged with your application specific configuration preferentially using any keys you define.
 
 * email (bool) - Enable or disable emailing of errors/exceptions
 * emailLevels (array) - The email levels that should be used to determine what errors/exceptions are emailed. Valid levels are ['exception', 'error', 'warning', 'notice', 'strict', 'deprecated']. Each level is used to capture the following exceptions/php errors:
@@ -133,7 +133,7 @@ With this configuration you would get emails whenever any fatal error or excepti
 
 If you found that you were receiving a lot of emails for exceptions/errors that you can not do anything about for instance Cake\Network\Exception\NotFoundException you can simply add it to the skipEmail config and you will no longer be bothered with those exceptions.
 
-If you want to throttle emails in general to avoid spamming your team, but you have some exceptions that you must always receive an email about then you can use the skipThrottle list. For instance maybe a customer has paid for something on your site, but you were unable to fulfill their purchase after they paid because it requires an API call to a service that was temporarilly down. Then you can add the exception you throw in that instance to the skip throttle list. This will result in all exceptions asside from the exceptions you define in the skipThrottle list being throttled to only email once per every 5 minutes while your FullfillmentException will email you every single time it happens.
+If you want to throttle emails in general to avoid spamming your team, but you have some exceptions that you must always receive an email about then you can use the skipThrottle list. For instance maybe a customer has paid for something on your site, but you were unable to fulfill their purchase after they paid because it requires an API call to a service that was temporarily down. Then you can add the exception you throw in that instance to the skip throttle list. This will result in all exceptions aside from the exceptions you define in the skipThrottle list being throttled to only email once per every 5 minutes while your FullfillmentException will email you every single time it happens.
 
 ## Advanced Usage
 ### Overriding Views

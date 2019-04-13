@@ -71,9 +71,10 @@ trait EmailThrowableTrait
             // Send a different template for php errors
             case $this->_isError($throwable):
                 // Use the error email template
-                $email->template('ErrorEmail.error', 'ErrorEmail.default')
-                    ->subject($this->_setupSubjectWithSiteAndEnv('An error has been thrown'))
-                    ->viewVars([
+                $email->setTemplate('ErrorEmail.error')
+                    ->setLayout('ErrorEmail.default')
+                    ->setSubject($this->_setupSubjectWithSiteAndEnv('An error has been thrown'))
+                    ->setViewVars([
                         'error' => $throwable,
                         'environment' => Configure::read('ErrorEmail.environment'),
                         'site' => Configure::read('ErrorEmail.siteName')
@@ -84,23 +85,24 @@ trait EmailThrowableTrait
                 // Break omitted intentionally
             default:
                 // Use the exception email template
-                $email->template('ErrorEmail.exception', 'ErrorEmail.default')
-                    ->subject($this->_setupSubjectWithSiteAndEnv('An exception has been thrown'))
-                    ->viewVars([
+                $email->setTemplate('ErrorEmail.exception')
+                    ->setLayout('ErrorEmail.default')
+                    ->setSubject($this->_setupSubjectWithSiteAndEnv('An exception has been thrown'))
+                    ->setViewVars([
                         'exception' => $throwable,
                         'environment' => Configure::read('ErrorEmail.environment'),
                         'site' => Configure::read('ErrorEmail.siteName')
                     ]);
                 break;
         }
-        $email->emailFormat('both');
+        $email->setEmailFormat('both');
         // Use toEmailAddress if we have it
         if (Configure::read('ErrorEmail.toEmailAddress')) {
-            $email->to(Configure::read('ErrorEmail.toEmailAddress'));
+            $email->setTo(Configure::read('ErrorEmail.toEmailAddress'));
         }
         // Use fromEmailAddress if we have it
         if (Configure::read('ErrorEmail.fromEmailAddress')) {
-            $email->from(Configure::read('ErrorEmail.fromEmailAddress'));
+            $email->setFrom(Configure::read('ErrorEmail.fromEmailAddress'));
         }
 
         return $email;
