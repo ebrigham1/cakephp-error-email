@@ -13,7 +13,7 @@ if (!is_dir(TMP)) {
 }
 define('CACHE', TMP . 'cache' . DS);
 // Setup cache
-Cache::config([
+Cache::setConfig([
     '_error_email_' => [
     'className' => 'File',
         'prefix' => 'error_email_',
