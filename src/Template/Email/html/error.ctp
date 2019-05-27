@@ -8,7 +8,7 @@
     <?php endif; ?>
     <tr>
         <td><strong>Error Url:</strong></td>
-        <td><?= $this->Url->build($this->request->here, true) ?></td>
+        <td><?= $this->Url->build($this->request->getAttribute('here'), true) ?></td>
     </tr>
     <tr>
         <td><strong>Error Class:</strong></td>
