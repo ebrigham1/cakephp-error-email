@@ -11,6 +11,10 @@
         <td><?= $this->Url->build($this->request->getAttribute('here'), true) ?></td>
     </tr>
     <tr>
+        <td><strong>Referer Url:</strong></td>
+        <td><?= $this->request->referer() ?></td>
+    </tr>
+    <tr>
         <td><strong>Error Class:</strong></td>
         <td><?= get_class($error) ?></td>
     </tr>

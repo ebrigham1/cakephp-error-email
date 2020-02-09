@@ -2,6 +2,7 @@ An error has been thrown<?php if ($site): ?> on <?= $site ?><?php endif; ?><?php
 
 <?php if ($environment): ?>Environment: <?= $environment ?><?php endif; ?>
 Error Url: <?= $this->Url->build($this->request->getAttribute('here'), true) ?>
+Referer Url: <?= $this->request->referer() ?>
 Error Class: <?= get_class($error) ?>
 Error Message: <?= $error->getMessage() ?>
 Error Code: <?= $error->getCode() ?>
