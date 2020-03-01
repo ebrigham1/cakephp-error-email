@@ -4,15 +4,18 @@ php:
   - 5.6
   - 7.0
   - 7.1
+  - 7.2
+  - 7.3
+  - 7.4
 
 matrix:
   fast_finish: true
 
   include:
-    - php: 7.0
+    - php: 7.4
       env: PHPCS=1
 
-    - php: 7.0
+    - php: 7.4
       env: COVERAGE=1
 
 
@@ -24,7 +27,7 @@ script:
   - if [[ $PHPCS != '1' && $COVERAGE != '1' ]]; then vendor/bin/phpunit; fi
   - if [[ $PHPCS = 1 ]]; then vendor/bin/phpcs -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP --ignore=vendor .; fi
   - if [[ $COVERAGE = 1 ]]; then vendor/bin/phpunit --coverage-clover=clover.xml; fi
-  
+
 
 after_success:
   - if [[ $COVERAGE = 1 ]]; then bash <(curl -s https://codecov.io/bash); fi

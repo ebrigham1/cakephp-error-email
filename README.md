@@ -1,5 +1,5 @@
 # ErrorEmail plugin for CakePHP 3.x
-[![Build Status](https://travis-ci.org/ebrigham1/cakephp-error-email.svg?branch=master)](https://travis-ci.org/ebrigham1/cakephp-error-email)
+[![Build Status](https://travis-ci.com/ebrigham1/cakephp-error-email.svg?branch=master)](https://travis-ci.com/ebrigham1/cakephp-error-email)
 [![codecov](https://codecov.io/gh/ebrigham1/cakephp-error-email/branch/master/graph/badge.svg)](https://codecov.io/gh/ebrigham1/cakephp-error-email)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)
 
@@ -105,7 +105,7 @@ This configuration is automatically merged with your application specific config
 * skipThrottle (array) - An array of exception/error classes that should never be throttled even if they are thrown more than once within the normal throttling window Ex: ['App\Exception\FullfillmentException'] These should be exceptions/errors you always want an email about every single time even if it spams your inbox.
 * toEmailAddress (string) - The email address to send these error/exception emails to, typically the dev team. This will override the to address provided by the email delivery profile if both are present.
 * fromEmailAddress (string) - The email address these emails should be sent from ex: noreply@yoursite.com. This will override the from address provided by the email delivery profile if both are present.
-* environment (string) - Optional, with the default template this will be placed in both the subject and the body of the email so its easy to identify what environment the email was sent from Ex: local/staging/production. 
+* environment (string) - Optional, with the default template this will be placed in both the subject and the body of the email so its easy to identify what environment the email was sent from Ex: local/staging/production.
 * siteName (string) - Optional, with the default template this will be placed in both the subject and the body of the email so its easy to identify what site the email was sent from.
 
 **Note:** the skipLog key from Error in your **config/app.php** file is also used. Exception/Error classes that are in that list will not be emailed out as it is assumed if they aren't important enough to even log they shouldn't be important enough to receive an email about.
